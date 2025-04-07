@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_mysqldb import MySQL
+import time
 
 app = Flask(__name__)
 
@@ -43,6 +44,7 @@ def submit():
     return jsonify({'message': new_message})
 
 if __name__ == '__main__':
+    time.sleep(10)
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
 
