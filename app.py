@@ -2,23 +2,13 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_mysqldb import MySQL
 import time
-import boto3
-from botocore.exceptions import ClientError
 app = Flask(__name__)
 
-def get_parameter(name, with_decryption=True):
-    ssm = boto3.client('ssm', region_name='us-east-1')
-    try:
-        response = ssm.get_parameter(Name=name, WithDecryption=with_decryption)
-        return response['Parameter']['Value']
-    except ClientError as e:
-        print(f"Error fetching {name}: {e}")
-        return None
-
-app.config['MYSQL_HOST'] = get_parameter('/myapp/db/host') or 'localhost'
-app.config['MYSQL_USER'] = get_parameter('/myapp/db/user') or 'default_user'
-app.config['MYSQL_PASSWORD'] = get_parameter('/myapp/db/password') or 'default_password'
-app.config['MYSQL_DB'] = get_parameter('/myapp/db/name') or 'default_db'
+# Configure MySQL from environment variables
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', 'localhost')
+app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'default_user')
+app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', 'default_password')
+app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'default_db')
 
 # Initialize MySQL
 mysql = MySQL(app)
